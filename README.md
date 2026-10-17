@@ -1,2 +1,12 @@
-# red_obj_detectionandmovement_webots
-Webots e-puck robot controller using Python and OpenCV for red object detection and tracking.
+🤖 E-Puck Color Tracking & Target Following in WebotsA Python-based robotics controller for the Webots e-puck robot that utilizes OpenCV and computer vision techniques to autonomously detect, track, and pursue red-colored targets in a simulated environment.🌟 Key FeaturesReal-Time Vision Processing: Captures live frames from the e-puck's onboard camera and converts them into OpenCV-compatible formats (BGRA $\rightarrow$ BGR $\rightarrow$ HSV).Robust Color Masking: Uses dual HSV color ranges to accurately isolate red targets under various lighting conditions.Centroid Tracking via Moments: Computes image moments (cv2.moments) to pinpoint the exact center ($x, y$) of the target object.Proportional Steering Control: Implements proportional error correction to steer the robot smoothly toward the target rather than making jerky, erratic movements.Autonomous Search Behavior: Automatically executes a searching routine (spinning in place) when the target leaves the camera's field of view.🛠️ Tech Stack & DependenciesSimulation Environment: Webots R2023+ / R2025Programming Language: Python 3.xLibraries:cv2 (OpenCV)numpyWebots Python Controller API (from controller import Robot)📂 Project StructurePlaintextred_obj_detectionandmovement_webots/
+│
+├── controllers/
+│   └── color_tracker/
+│       └── color_tracker.py    # Main controller script
+│
+├── worlds/
+│   └── color_tracking_world.wbt # Webots world file containing the e-puck and target
+│
+└── README.md
+🚀 Getting Started & How to RunClone the Repository:Bashgit clone https://github.com/Ryangoslingme/red_obj_detectionandmovement_webots.git
+Open the World in Webots:Launch Webots.Open the project world file containing your e-puck robot and a red target object (such as a red box or ball placed on the ground).Assign the Controller:In the Webots Scene Tree, click on the e-puck node.Locate the controller field in the properties panel on the right.Select color_tracker.Run the Simulation:Save the world (Ctrl + S), click Reset, and then hit Play ▶️!🧠 How the Code WorksCamera Stream: The script fetches image frames from the e-puck's camera device using camera.getImage().HSV Conversion: Frames are converted to the HSV color space because it separates color information (Hue) from lighting (Value/Saturation), making color tracking much more reliable.Error Calculation: The horizontal offset ($error$) between the center of the image frame and the center of the red object is computed:$$\text{error} = x_{\text{object}} - x_{\text{image\_center}}$$Velocity Modulation:If $\text{error}$ is small, the robot drives straight forward.If $\text{error}$ is positive/negative, the proportional controller adjusts wheel speeds dynamically to curve toward the target.📜 LicenseDistributed under the MIT License. See LICENSE for more information.
