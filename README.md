@@ -1,12 +1,106 @@
-🤖 E-Puck Color Tracking & Target Following in WebotsA Python-based robotics controller for the Webots e-puck robot that utilizes OpenCV and computer vision techniques to autonomously detect, track, and pursue red-colored targets in a simulated environment.🌟 Key FeaturesReal-Time Vision Processing: Captures live frames from the e-puck's onboard camera and converts them into OpenCV-compatible formats (BGRA $\rightarrow$ BGR $\rightarrow$ HSV).Robust Color Masking: Uses dual HSV color ranges to accurately isolate red targets under various lighting conditions.Centroid Tracking via Moments: Computes image moments (cv2.moments) to pinpoint the exact center ($x, y$) of the target object.Proportional Steering Control: Implements proportional error correction to steer the robot smoothly toward the target rather than making jerky, erratic movements.Autonomous Search Behavior: Automatically executes a searching routine (spinning in place) when the target leaves the camera's field of view.🛠️ Tech Stack & DependenciesSimulation Environment: Webots R2023+ / R2025Programming Language: Python 3.xLibraries:cv2 (OpenCV)numpyWebots Python Controller API (from controller import Robot)📂 Project StructurePlaintextred_obj_detectionandmovement_webots/
-│
-├── controllers/
-│   └── color_tracker/
-│       └── color_tracker.py    # Main controller script
-│
-├── worlds/
-│   └── color_tracking_world.wbt # Webots world file containing the e-puck and target
-│
-└── README.md
-🚀 Getting Started & How to RunClone the Repository:Bashgit clone https://github.com/Ryangoslingme/red_obj_detectionandmovement_webots.git
-Open the World in Webots:Launch Webots.Open the project world file containing your e-puck robot and a red target object (such as a red box or ball placed on the ground).Assign the Controller:In the Webots Scene Tree, click on the e-puck node.Locate the controller field in the properties panel on the right.Select color_tracker.Run the Simulation:Save the world (Ctrl + S), click Reset, and then hit Play ▶️!🧠 How the Code WorksCamera Stream: The script fetches image frames from the e-puck's camera device using camera.getImage().HSV Conversion: Frames are converted to the HSV color space because it separates color information (Hue) from lighting (Value/Saturation), making color tracking much more reliable.Error Calculation: The horizontal offset ($error$) between the center of the image frame and the center of the red object is computed:$$\text{error} = x_{\text{object}} - x_{\text{image\_center}}$$Velocity Modulation:If $\text{error}$ is small, the robot drives straight forward.If $\text{error}$ is positive/negative, the proportional controller adjusts wheel speeds dynamically to curve toward the target.📜 LicenseDistributed under the MIT License. See LICENSE for more information.
+# E-puck Color Tracking Robot — Webots + OpenCV
+
+## Overview
+
+This project implements a camera-based color-tracking robot using the e-puck robot in Webots. The robot detects a red object in its camera image and adjusts its wheel speeds to steer toward the object.
+
+The controller uses Python, OpenCV, and NumPy for image processing and Webots' controller API to control the robot.
+
+## Objectives
+
+- Capture images from the robot's onboard camera.
+- Detect red-colored regions using HSV color thresholding.
+- Estimate the horizontal position of the detected red region.
+- Steer the robot toward the target using differential wheel speeds.
+- Search for the target when it is not visible.
+
+## Technologies Used
+
+- **Simulator:** Webots
+- **Programming language:** Python
+- **Computer vision:** OpenCV
+- **Numerical processing:** NumPy
+- **Robot:** e-puck
+
+## How It Works
+
+1. **Image capture:** The e-puck camera provides an image during each simulation step.
+2. **Image conversion:** The camera image is converted into a format that OpenCV can process.
+3. **Color detection:** The image is converted from BGR to HSV color space. Two HSV ranges are used to detect red hues.
+4. **Target localization:** A binary mask isolates red pixels, and image moments estimate their horizontal center.
+5. **Steering:** The controller compares the target center with the image center and adjusts the left and right wheel speeds.
+6. **Target search:** If no sufficient red signal is detected, the robot rotates in place to search for the target.
+
+## Control Logic
+
+| Target position | Robot response |
+|---|---|
+| Near the image center | Moves forward |
+| Right of the image center | Turns right |
+| Left of the image center | Turns left |
+| No detectable red region | Rotates to search |
+
+The current controller uses a proportional steering correction based on the horizontal image error.
+
+## Requirements
+
+- Webots installed
+- Python interpreter compatible with the Webots controller environment
+- OpenCV (`cv2`)
+- NumPy
+
+Install the Python dependencies using the interpreter configured for your Webots controller:
+
+```bash
+python -m pip install opencv-python numpy
+```
+
+If Webots uses a specific Python executable, run the command with that executable instead.
+
+## Running the Simulation
+
+1. Open the project world in Webots.
+2. Confirm that the e-puck has an enabled camera and the expected wheel motors.
+3. Assign `colour_detect` as the robot's controller.
+4. Ensure OpenCV and NumPy are installed in the controller's Python environment.
+5. Start the simulation.
+6. Place a red target within the camera's field of view.
+7. Observe the robot's steering response as the target moves across the image.
+8. Move the target out of view and observe the search behavior.
+
+## Testing and Evaluation
+
+The controller should be tested under different target positions and visibility conditions.
+
+Record the results in `results/test-results.md`, including:
+
+- Test conditions
+- Expected behavior
+- Observed behavior
+- Pass/fail status
+- Notes or screenshots where useful
+
+Do not report unrun tests as successful.
+
+## Current Limitations
+
+- Detection depends on lighting, target color, and the selected HSV thresholds.
+- The controller estimates horizontal target position; it does not directly estimate distance.
+- Multiple red regions may influence the calculated center because the current implementation processes the combined red mask.
+- The robot may continue moving forward when the target is centered, so obstacle avoidance and collision prevention are not guaranteed.
+- Performance may vary with target size, camera resolution, and scene conditions.
+
+## Future Improvements
+
+- Add a visual marker showing the detected target center.
+- Tune HSV thresholds under different lighting conditions.
+- Test multiple target sizes and distances.
+- Use contour filtering to select one target instead of combining all red regions.
+- Add distance estimation and a controlled stopping condition.
+- Combine color tracking with obstacle avoidance.
+
+## Project Status
+
+**Status:** Basic red-object tracking implemented in Webots.
+
+Testing results and performance claims should be updated as further experiments are completed.
